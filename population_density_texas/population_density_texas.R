@@ -10,6 +10,8 @@ library(sf)
 library(ggplot2)
 library(stringr)
 library(viridis)
+library(RColorBrewer)
+library(rayshader)
 
 population_2017<- read.csv("./population_density_texas/ACS_17_5YR_B01003_with_ann.csv")
 names(population_2017) <- as.matrix(population_2017[1, ])
@@ -45,5 +47,7 @@ density_map2017 <- left_join(density2017, counties, by = c("id2" = "CNTY_FIPS"))
 density_map2017 <- st_as_sf(density_map2017)
 density_map2017 <- rename(density_map2017, County = geography.x)
 
-mymap <- ggplot(data=density_map2017) + geom_sf(aes(fill =density)) + scale_color_viridis(option="viridis", name="People per square mile", direction = -1)
+mymap <- ggplot(data=density_map2017) + geom_sf(aes(fill =density)) + scale_fill_viridis_c(option="A", name="People per square mile")
 
+
+plot_gg(mymap,multicore=TRUE,width=6,height=6,fov = 70)
