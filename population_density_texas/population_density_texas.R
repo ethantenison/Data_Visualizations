@@ -47,12 +47,20 @@ density_map2017 <- left_join(density2017, counties, by = c("id2" = "CNTY_FIPS"))
 density_map2017 <- st_as_sf(density_map2017)
 density_map2017 <- rename(density_map2017, County = geography.x)
 
-mymap <- ggplot(data=density_map2017) + geom_sf(aes(fill =density)) + scale_fill_viridis_c(name="Log People per square mile") +theme_bw() + ggtitle("Density of Texas Counties (2019")
+mymap <- ggplot(data=density_map2017) + geom_sf(aes(fill =density)) + scale_fill_viridis_c(name="Persons/mile^2") +theme_bw() + ggtitle("Density of Texas Counties (2019)")
 
 
-texas_density <- plot_gg(mymap,multicore=TRUE,width=6,height=5,fov = 70, zoom =.5)
+texas_density <- plot_gg(mymap,multicore=TRUE,width=5,height=4,fov = 70, zoom =.4)
 #render_depth(focallength=100,focus=0.9)
 #render_snapshot()
 
 filename_movie = tempfile()
-render_movie(filename = filename_movie, type = "oscillate")
+
+phivechalf = 30 + 60 * 1/(1 + exp(seq(-7, 20, length.out = 180)/2))
+phivecfull = c(phivechalf, rev(phivechalf))
+thetavec = -90 + 60 * sin(seq(0,359,length.out = 360) * pi/180)
+zoomvec = 0.45 + 0.2 * 1/(1 + exp(seq(-5, 20, length.out = 180)))
+zoomvecfull = c(zoomvec, rev(zoomvec))
+
+render_movie(filename = filename_movie, type = "custom", frames = 360,  phi = phivecfull, zoom = zoomvecfull, theta = thetavec)
+
