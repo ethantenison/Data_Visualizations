@@ -47,7 +47,12 @@ density_map2017 <- left_join(density2017, counties, by = c("id2" = "CNTY_FIPS"))
 density_map2017 <- st_as_sf(density_map2017)
 density_map2017 <- rename(density_map2017, County = geography.x)
 
-mymap <- ggplot(data=density_map2017) + geom_sf(aes(fill =density)) + scale_fill_viridis_c(option="A", name="People per square mile")
+mymap <- ggplot(data=density_map2017) + geom_sf(aes(fill =density)) + scale_fill_viridis_c(name="Log People per square mile") +theme_bw() + ggtitle("Density of Texas Counties (2019")
 
 
-plot_gg(mymap,multicore=TRUE,width=6,height=6,fov = 70)
+texas_density <- plot_gg(mymap,multicore=TRUE,width=6,height=5,fov = 70, zoom =.5)
+#render_depth(focallength=100,focus=0.9)
+#render_snapshot()
+
+filename_movie = tempfile()
+render_movie(filename = filename_movie, type = "oscillate")
