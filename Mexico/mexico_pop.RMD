@@ -21,8 +21,28 @@ library("mxmaps")
 mexico <- st_read("./Mexico/Muni_2012gw.shp")
 mexico <- clean_names(mexico)
 
+options(scipen=999)
+mexico$NOM_MUN <- as.character(mexico$NOM_MUN)
+mexico$CVE_MUN <- as.character(mexico$CVE_MUN)
+
 population <- df_mxmunicipio
 
-mexico_map <- left_join(mexico, population, by = c("CVE_MUN"="municipio_code"))
+mexico_map <- left_join(mexico, population, by = c("NOM_MUN"="municipio_name", "CVE_MUN" = "municipio_code"))
+mexico_map$pop <- as.numeric(mexico_map$pop)
+
+mexico_map['index'] <- 1:2481
+mexico_map <- mexico_map %>% select(index,everything()) 
+
+mexico_map <- mutate(mexico_map, area = st_area(mexico_map$geometry))
+mexico_map <- mutate(mexico_map, area = area/1000000)
+mexico_map <- mutate(mexico_map, density = pop/area)
+mexico_map$density <- as.numeric(mexico_map$density)
+
+
+mymap <- ggplot(data=mexico_map) + geom_sf(aes(fill =pop), linetype = "blank") + scale_fill_viridis_c(option = "inferno",name="Population") +theme_bw() + ggtitle("Population of Mexican Municipalities")
+
+mymap2 <- ggplot(data=mexico_map) + geom_sf(aes(fill =log(density)), linetype = "blank") + scale_fill_viridis_c(option = "inferno",name="Log(Density)") +theme_bw() + ggtitle("Population Density of Mexican Municipalities")
+
 
 ```
+
